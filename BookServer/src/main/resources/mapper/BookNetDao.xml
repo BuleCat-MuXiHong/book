@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.server.dao.BookNetDao">
+
+    <resultMap type="com.server.entity.BookNet" id="BookNetMap">
+        <result property="bookId" column="book_id" jdbcType="INTEGER"/>
+        <result property="bookName" column="book_name" jdbcType="VARCHAR"/>
+        <result property="bookIp" column="book_ip" jdbcType="VARCHAR"/>
+        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
+        <result property="bookType" column="book_type" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BookNetMap">
+        select book_id,
+               book_name,
+               book_ip,
+               create_date,
+               update_date,
+               book_type
+        from book_net
+        where book_id = #{bookId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BookNetMap">
+        select
+        book_id, book_name, book_ip, create_date, update_date, book_type
+        from book_net
+        <where>
+            <if test="bookNet.bookId != null">
+                and book_id = #{bookNet.bookId}
+            </if>
+            <if test="bookNet.bookName != null and bookNet.bookName != ''">
+                and book_name = #{bookNet.bookName}
+            </if>
+            <if test="bookNet.bookIp != null and bookNet.bookIp != ''">
+                and book_ip = #{bookNet.bookIp}
+            </if>
+            <if test="bookNet.createDate != null">
+                and create_date = #{bookNet.createDate}
+            </if>
+            <if test="bookNet.updateDate != null">
+                and update_date = #{bookNet.updateDate}
+            </if>
+            <if test="bookNet.bookType != null and bookNet.bookType != ''">
+                and book_type = #{bookNet.bookType}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from book_net
+        <where>
+            <if test="bookId != null">
+                and book_id = #{bookId}
+            </if>
+            <if test="bookName != null and bookName != ''">
+                and book_name = #{bookName}
+            </if>
+            <if test="bookIp != null and bookIp != ''">
+                and book_ip = #{bookIp}
+            </if>
+            <if test="createDate != null">
+                and create_date = #{createDate}
+            </if>
+            <if test="updateDate != null">
+                and update_date = #{updateDate}
+            </if>
+            <if test="bookType != null and bookType != ''">
+                and book_type = #{bookType}
+            </if>
+        </where>
+    </select>
+
+
+    <!--通过name查询单条数据-->
+    <select id="queryByName" resultMap="BookNetMap">
+        select book_id,
+               book_name,
+               book_ip,
+               create_date,
+               update_date,
+               book_type
+        from book_net
+        where book_name = #{name}
+    </select>
+
+    <!--通过ip查询单条数据-->
+    <select id="queryByIp" resultMap="BookNetMap">
+        select book_id,
+               book_name,
+               book_ip,
+               create_date,
+               update_date,
+               book_type
+        from book_net
+        where book_ip = #{ip}
+
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="bookId" useGeneratedKeys="true">
+        insert into book_net(book_name, book_ip, create_date, update_date, book_type)
+        values (#{bookName}, #{bookIp}, #{createDate}, #{updateDate}, #{bookType})
+    </insert>
+
+
+    <insert id="insertBatch" keyProperty="bookId" useGeneratedKeys="true">
+        insert into book_net(book_name, book_ip, create_date, update_date, book_type)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.bookName}, #{entity.bookIp}, #{entity.createDate}, #{entity.updateDate}, #{entity.bookType})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="bookId" useGeneratedKeys="true">
+        insert into book_net(book_name, book_ip, create_date, update_date, book_type)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.bookName}, #{entity.bookIp}, #{entity.createDate}, #{entity.updateDate}, #{entity.bookType})
+        </foreach>
+        on duplicate key update
+        book_name = values(book_name),
+        book_ip = values(book_ip),
+        create_date = values(create_date),
+        update_date = values(update_date),
+        book_type = values(book_type)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update book_net
+        <set>
+            <if test="bookName != null and bookName != ''">
+                book_name = #{bookName},
+            </if>
+            <if test="bookIp != null and bookIp != ''">
+                book_ip = #{bookIp},
+            </if>
+            <if test="createDate != null">
+                create_date = #{createDate},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate},
+            </if>
+            <if test="bookType != null and bookType != ''">
+                book_type = #{bookType},
+            </if>
+        </set>
+        where book_id = #{bookId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from book_net
+        where book_id = #{bookId}
+    </delete>
+
+</mapper>
+
